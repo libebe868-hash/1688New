@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉鸿店铺 · 数据战情室 Pro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #555;
+            font-size: 1.2em;
+        }
+        canvas {
+            width: 100% !important;
+            height: 200px !important;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>汉鸿店铺运营数据仪表板</h1>
+        <div class="grid">
+            <!-- 原有板块：总展现 -->
+            <div class="card">
+                <h2>总展现</h2>
+                <canvas id="totalImpressions"></canvas>
+            </div>
+            <!-- 原有板块：广告展现 -->
+            <div class="card">
+                <h2>广告展现</h2>
+                <canvas id="adImpressions"></canvas>
+            </div>
+            <!-- 原有板块：自然展现 -->
+            <div class="card">
+                <h2>自然展现</h2>
+                <canvas id="naturalImpressions"></canvas>
+            </div>
+            <!-- 原有板块：总访客 -->
+            <div class="card">
+                <h2>总访客</h2>
+                <canvas id="visitors"></canvas>
+            </div>
+            <!-- 原有板块：询盘数 -->
+            <div class="card">
+                <h2>询盘数</h2>
+                <canvas id="inquiries"></canvas>
+            </div>
+            <!-- 原有板块：接待人数 -->
+            <div class="card">
+                <h2>接待人数</h2>
+                <canvas id="receptions"></canvas>
+            </div>
+            <!-- 新增板块：广告花费 -->
+            <div class="card">
+                <h2>广告花费</h2>
+                <canvas id="adSpend"></canvas>
+            </div>
+            <!-- 新增板块：线索 -->
+            <div class="card">
+                <h2>线索</h2>
+                <canvas id="leads"></canvas>
+            </div>
+            <!-- 新增板块：成交金额 -->
+            <div class="card">
+                <h2>成交金额</h2>
+                <canvas id="deals"></canvas>
+            </div>
+        </div>
+    </div>
+    <script>
+        const data = [
+            {date: '2025-10-30', totalImpressions: 174, adImpressions: 130, naturalImpressions: 44, visitors: 10, inquiries: 0, receptions: 0, adSpend: 18.98, leads: 7, deals: 0},
+            {date: '2025-10-31', totalImpressions: 551, adImpressions: 508, naturalImpressions: 43, visitors: 14, inquiries: 2, receptions: 2, adSpend: 9.8, leads: 2, deals: 0},
+            {date: '2025-11-01', totalImpressions: 645, adImpressions: 498, naturalImpressions: 147, visitors: 10, inquiries: 0, receptions: 0, adSpend: 23.24, leads: 0, deals: 0},
+            {date: '2025-11-02', totalImpressions: 490, adImpressions: 475, naturalImpressions: 15, visitors: 10, inquiries: 0, receptions: 0, adSpend: 140, leads: 0, deals: 0},
+            {date: '2025-11-03', totalImpressions: 3696, adImpressions: 3592, naturalImpressions: 104, visitors: 84, inquiries: 2, receptions: 2, adSpend: 313, leads: 2, deals: 814},
+            {date: '2025-11-04', totalImpressions: 3965, adImpressions: 3856, naturalImpressions: 109, visitors: 127, inquiries: 2, receptions: 3, adSpend: 335.86, leads: 10, deals: 568},
+            {date: '2025-11-05', totalImpressions: 2911, adImpressions: 2692, naturalImpressions: 219, visitors: 74, inquiries: 3, receptions: 5, adSpend: 323.32, leads: 4, deals: 0},
+            {date: '2025-11-06', totalImpressions: 2354, adImpressions: 2246, naturalImpressions: 108, visitors: 79, inquiries: 2, receptions: 2, adSpend: 340.55, leads: 5, deals: 46},
+            {date: '2025-11-07', totalImpressions: 3389, adImpressions: 3245, naturalImpressions: 144, visitors: 83, inquiries: 2, receptions: 2, adSpend: 340.58, leads: 1, deals: 0},
+            {date: '2025-11-08', totalImpressions: 3140, adImpressions: 2973, naturalImpressions: 167, visitors: 63, inquiries: 0, receptions: 0, adSpend: 340.58, leads: 1, deals: 0},
+            {date: '2025-11-09', totalImpressions: 914, adImpressions: 856, naturalImpressions: 58, visitors: 21, inquiries: 0, receptions: 0, adSpend: 190.58, leads: 0, deals: 0},
+            {date: '2025-11-10', totalImpressions: 4184, adImpressions: 3948, naturalImpressions: 236, visitors: 77, inquiries: 4, receptions: 5, adSpend: 459.84, leads: 41, deals: 0},
+            {date: '2025-11-11', totalImpressions: 6360, adImpressions: 6231, naturalImpressions: 129, visitors: 146, inquiries: 4, receptions: 5, adSpend: 359, leads: 8, deals: 10},
+            {date: '2025-11-12', totalImpressions: 338, adImpressions: 157, naturalImpressions: 181, visitors: 24, inquiries: 4, receptions: 7, adSpend: 130, leads: 4, deals: 0},
+            {date: '2025-11-13', totalImpressions: 288, adImpressions: 112, naturalImpressions: 176, visitors: 27, inquiries: 2, receptions: 5, adSpend: 130, leads: 0, deals: 64},
+            {date: '2025-11-14', totalImpressions: 2980, adImpressions: 2847, naturalImpressions: 133, visitors: 40, inquiries: 3, receptions: 3, adSpend: 309.99, leads: 1, deals: 269},
+            {date: '2025-11-15', totalImpressions: 1703, adImpressions: 1610, naturalImpressions: 93, visitors: 48, inquiries: 1, receptions: 3, adSpend: 310.58, leads: 3, deals: 320},
+            {date: '2025-11-16', totalImpressions: 149, adImpressions: 68, naturalImpressions: 81, visitors: 4, inquiries: 0, receptions: 0, adSpend: 130, leads: 1, deals: 0},
+            {date: '2025-11-17', totalImpressions: 2920, adImpressions: 2526, naturalImpressions: 394, visitors: 54, inquiries: 1, receptions: 1, adSpend: 312.33, leads: 7, deals: 48},
+            {date: '2025-11-18', totalImpressions: 2889, adImpressions: 2715, naturalImpressions: 174, visitors: 78, inquiries: 2, receptions: 2, adSpend: 419.54, leads: 9, deals: 640},
+            {date: '2025-11-19', totalImpressions: 2653, adImpressions: 2314, naturalImpressions: 339, visitors: 86, inquiries: 2, receptions: 3, adSpend: 317.13, leads: 3, deals: 477},
+            {date: '2025-11-20', totalImpressions: 1879, adImpressions: 1640, naturalImpressions: 239, visitors: 50, inquiries: 7, receptions: 8, adSpend: 343.23, leads: 8, deals: 1858},
+            {date: '2025-11-21', totalImpressions: 2061, adImpressions: 1853, naturalImpressions: 208, visitors: 50, inquiries: 5, receptions: 7, adSpend: 307.38, leads: 6, deals: 129},
+            {date: '2025-11-22', totalImpressions: 1061, adImpressions: 828, naturalImpressions: 233, visitors: 50, inquiries: 4, receptions: 6, adSpend: 309.75, leads: 12, deals: 810},
+            {date: '2025-11-23', totalImpressions: 677, adImpressions: 627, naturalImpressions: 50, visitors: 9, inquiries: 1, receptions: 1, adSpend: 181.32, leads: 0, deals: 0}
+        ];
+
+        function createLineChart(ctxId, label, dataKey, color = 'rgba(75, 192, 192, 1)') {
+            const ctx = document.getElementById(ctxId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.date),
+                    datasets: [{
+                        label: label,
+                        data: data.map(d => d[dataKey]),
+                        borderColor: color,
+                        backgroundColor: color.replace('1)', '0.2)'),
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // 创建原有图表
+        createLineChart('totalImpressions', '总展现', 'totalImpressions', 'rgba(75, 192, 192, 1)');
+        createLineChart('adImpressions', '广告展现', 'adImpressions', 'rgba(153, 102, 255, 1)');
+        createLineChart('naturalImpressions', '自然展现', 'naturalImpressions', 'rgba(255, 159, 64, 1)');
+        createLineChart('visitors', '总访客', 'visitors', 'rgba(255, 99, 132, 1)');
+        createLineChart('inquiries', '询盘数', 'inquiries', 'rgba(54, 162, 235, 1)');
+        createLineChart('receptions', '接待人数', 'receptions', 'rgba(255, 206, 86, 1)');
+
+        // 创建新增图表
+        createLineChart('adSpend', '广告花费', 'adSpend', 'rgba(75, 192, 192, 1)');
+        createLineChart('leads', '线索', 'leads', 'rgba(153, 102, 255, 1)');
+        createLineChart('deals', '成交金额', 'deals', 'rgba(255, 159, 64, 1)');
+    </script>
+</body>
+</html>
